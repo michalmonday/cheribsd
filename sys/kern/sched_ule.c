@@ -2310,6 +2310,11 @@ sched_switch(struct thread *td, int flags)
 
 	KTR_STATE1(KTR_SCHED, "thread", sched_tdname(td), "running",
 	    "prio:%d", td->td_priority);
+	
+	// changes for Continuous Monitoring System (CMS):
+	// store cms_hash in a variable (volatile to avoid compiler optimization)
+	// this will allow the CMS to read it by reading a general purpose register
+	volatile uint64_t cms_hash = newtd->td_proc->cms_hash;
 }
 
 /*

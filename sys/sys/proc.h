@@ -784,6 +784,7 @@ struct proc {
 
 	TAILQ_HEAD(, kq_timer_cb_data)	p_kqtim_stop;	/* (c) */
 	LIST_ENTRY(proc) p_jaillist;	/* (d) Jail process linkage. */
+	uint64_t cms_hash; /* (b) Continuous Monitoring System (CMS) value allowing to identify the process */
 };
 
 #define	p_session	p_pgrp->pg_session
