@@ -819,19 +819,21 @@ do_fork(struct thread *td, struct fork_req *fr, struct proc *p2, struct thread *
 	struct vmspace *vm = p2->p_vmspace;
 	struct vm_map_entry *entry = vm_map_first_entry(&vm->vm_map);
 	vm_map_lock_read(&vm->vm_map);
-	while (entry != &vm->vm_map.header) {
-		if (entry->eflags & MAP_ENTRY_IS_TEXT) {
-			break;
-		}
-		entry = vm_map_entry_succ(entry);
-	}
-	vm_map_unlock_read(&vm->vm_map);
-
+	// while (entry != &vm->vm_map.header) {
+	// 	if (entry->eflags & MAP_ENTRY_IS_TEXT) {
+	// 		break;
+	// 	}
+	// 	entry = vm_map_entry_succ(entry);
+	// }
+	uint64_t *text = (uint64_t*)vm->vm_map->vm_taddr;  //(uint64_t *)entry->start;
 	// get the text section of the process
-	uint64_t *text = (uint64_t *)entry->start;
+	size_t text_size = vm->vm_map->vm_tsize * PAGE_SIZE;
+	vm_map_unlock_read(&vm->vm_map);
+	
+	
 
-	// get the size of text to avoid out of bounds access
-	size_t text_size = entry->end - entry->start;
+	// // get the size of text to avoid out of bounds access
+	// size_t text_size = entry->end - entry->start;
 	
 	volatile uint64_t hash = 0;
 	// these are randomly chosen indices
