@@ -2315,6 +2315,9 @@ sched_switch(struct thread *td, int flags)
 	// store cms_hash in a variable (volatile to avoid compiler optimization)
 	// this will allow the CMS to read it by reading a general purpose register
 	volatile uint64_t cms_hash = newtd->td_proc->cms_hash;
+	// avoid unused variable warning
+	(void)cms_hash;
+
 }
 
 /*
