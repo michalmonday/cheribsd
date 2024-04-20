@@ -234,6 +234,13 @@ exit1(struct thread *td, int rval, int signo)
 	TSPROCEXIT(td->td_proc->p_pid);
 
 	p = td->td_proc;
+
+
+	// struct vnode *textvp = p->p_textvp;
+	// if (textvp != NULL) {
+	// 	printf("exit1: p->binname = %s, p->p_pid = %d, p->p_comm = %s, p->textvp.v_nchash = %X, p->textvp.v_hash = %X p->textvp.p_ino = %X\n", p->p_binname == NULL ? "" : p->p_binname, p->p_pid, p->p_comm, textvp->v_nchash, textvp->v_hash, textvp->v_);
+	// }
+
 	/*
 	 * In case we're rebooting we just let init die in order to
 	 * work around an issues where pid 1 might get a fatal signal.

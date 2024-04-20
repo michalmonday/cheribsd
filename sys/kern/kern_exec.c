@@ -926,6 +926,31 @@ interpret:
 	p->p_args = newargs;
 	newargs = NULL;
 
+	// Added for Continuous Monitoring System (CMS):
+	// set proc->cms_hash
+	// compute hash of the process based on the file name and the path
+
+	// get the file name
+	if (p->p_binname != NULL) {
+		// char *file_name = p->p_binname;
+		// the path already includes the file name so no point using the binname
+		char *path = imgp->execpath;
+		unsigned long hash = 0;
+		int c;
+		// char *pstr = file_name;
+		// while ((c = *pstr++))
+		// 	hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+		char *pstr = path;
+		while ((c = *pstr++))
+			hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+		// set the hash
+		p->cms_hash = hash;
+		//printf("do_execve: p->p_pid=%d, p->p_binname=%s, imgp->execpath=%s, p->cms_hash: %lX\n", p->p_pid, p->p_binname, imgp->execpath, p->cms_hash);
+	}
+
+
+
+
 	PROC_UNLOCK(p);
 
 #ifdef	HWPMC_HOOKS

@@ -808,41 +808,11 @@ do_fork(struct thread *td, struct fork_req *fr, struct proc *p2, struct thread *
 		*fr->fr_procp = p2;
 	}
 
-
-	// changes for the Continuous Monitoring System (CMS)
-	// compute hash of the new process and set proc->cms_hash to it
-	// this is used to identify the process in the CMS
-	// we need to do this after the process is fully initialized
-	// and before it starts running
-
-	// get the text section of the process
-	struct vmspace *vm = p2->p_vmspace;
-	// struct vm_map_entry *entry = vm_map_first_entry(&vm->vm_map);
-	// vm_map_lock_read(&vm->vm_map);
-	// while (entry != &vm->vm_map.header) {
-	// 	if (entry->eflags & MAP_ENTRY_IS_TEXT) {
-	// 		break;
-	// 	}
-	// 	entry = vm_map_entry_succ(entry);
+	// // get vnode of the text segment
+	// struct vnode *textvp = p2->p_textvp;
+	// if (textvp != NULL) {
+	// 	printf("fork1: p2->binname = %s, p2->p_pid = %d, p2->p_comm = %s, p2->textvp.v_nchash = %X, p2->textvp.v_hash = %X\n", p2->p_binname == NULL ? "" : p2->p_binname, p2->p_pid, p2->p_comm, textvp->v_nchash, textvp->v_hash);
 	// }
-	uint64_t *text = (uint64_t*)vm->vm_taddr;  //(uint64_t *)entry->start;
-	// get the text section of the process
-	size_t text_size = vm->vm_tsize * PAGE_SIZE;
-	// vm_map_unlock_read(&vm->vm_map);
-	
-	
-
-	// // get the size of text to avoid out of bounds access
-	// size_t text_size = entry->end - entry->start;
-	
-	volatile uint64_t hash = 0;
-	// these are randomly chosen indices
-	int indices_to_use[] = {0, 4, 8, 42, 101, 202, 303, 404, 2001, 2002, 2103, 2204, 51003, 52004, 53005};
-	for (int i = 0; i < sizeof(indices_to_use) / sizeof(indices_to_use[0]); i++) {
-		hash ^= text[indices_to_use[i] % text_size];
-	}
-	// set the hash
-	p2->cms_hash = hash;
 }
 
 static void
@@ -945,6 +915,11 @@ fork1(struct thread *td, struct fork_req *fr)
 	}
 
 	p1 = td->td_proc;
+	
+	// struct vnode *textvp = p1->p_textvp;
+	// if (textvp != NULL) {
+	// 	printf("fork1: p1->p_comm = %s, p1->textvp.v_nchash = %X, p1->textvp.v_hash = %X\n", p1->p_comm, textvp->v_nchash, textvp->v_hash);
+	// }
 
 	/*
 	 * Here we don't create a new process, but we divorce
