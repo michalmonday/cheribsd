@@ -93,6 +93,8 @@
 dtrace_execexit_func_t	dtrace_fasttrap_exit;
 #endif
 
+#include <sys/cms.h>
+
 SDT_PROVIDER_DECLARE(proc);
 SDT_PROBE_DEFINE1(proc, , , exit, "int");
 
@@ -732,6 +734,7 @@ exit1(struct thread *td, int rval, int signo)
 	 * Other thread parts to release include pcb bits and such.
 	 */
 	thread_exit();
+	expose_cms_hash(0xAAAAAAAA); // invalid hash to indicate process exit, meaning the hash won't be valid until a new process is created or sched_switch is called
 }
 
 #ifndef _SYS_SYSPROTO_H_

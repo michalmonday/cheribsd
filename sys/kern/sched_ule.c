@@ -77,6 +77,8 @@ dtrace_vtime_switch_func_t	dtrace_vtime_switch_func;
 #include <machine/cpu.h>
 #include <machine/smp.h>
 
+#include <sys/cms.h>
+
 #define	KTR_ULE	0
 
 #define	TS_NAME_LEN (MAXCOMLEN + sizeof(" td ") + sizeof(__XSTRING(UINT_MAX)))
@@ -2311,13 +2313,14 @@ sched_switch(struct thread *td, int flags)
 	KTR_STATE1(KTR_SCHED, "thread", sched_tdname(td), "running",
 	    "prio:%d", td->td_priority);
 	
-	// changes for Continuous Monitoring System (CMS):
-	// store cms_hash in a variable (volatile to avoid compiler optimization)
-	// this will allow the CMS to read it by reading a general purpose register
-	volatile uint64_t cms_hash = newtd->td_proc->cms_hash;
-	// avoid unused variable warning
-	(void)cms_hash;
+	// // changes for Continuous Monitoring System (CMS):
+	// // store cms_hash in a variable (volatile to avoid compiler optimization)
+	// // this will allow the CMS to read it by reading a general purpose register
+	// volatile uint64_t cms_hash = newtd->td_proc->cms_hash;
+	// // avoid unused variable warning
+	// (void)cms_hash;
 
+	expose_cms_hash(newtd->td_proc->cms_hash);
 }
 
 /*

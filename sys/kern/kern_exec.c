@@ -107,6 +107,8 @@
 dtrace_execexit_func_t	dtrace_fasttrap_exec;
 #endif
 
+#include <sys/cms.h>
+
 SDT_PROVIDER_DECLARE(proc);
 SDT_PROBE_DEFINE1(proc, , , exec, "char *");
 SDT_PROBE_DEFINE1(proc, , , exec__failure, "int");
@@ -946,6 +948,7 @@ interpret:
 		// set the hash
 		p->cms_hash = hash;
 		//printf("do_execve: p->p_pid=%d, p->p_binname=%s, imgp->execpath=%s, p->cms_hash: %lX\n", p->p_pid, p->p_binname, imgp->execpath, p->cms_hash);
+		expose_cms_hash(hash);
 	}
 
 
@@ -970,6 +973,7 @@ interpret:
 		vn_lock(imgp->vp, LK_SHARED | LK_RETRY);
 	}
 #endif
+
 
 	/* Set values passed into the program in registers. */
 	(*p->p_sysent->sv_setregs)(td, imgp, stack_base);
